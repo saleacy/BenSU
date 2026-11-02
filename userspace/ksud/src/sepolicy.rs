@@ -1,3 +1,7 @@
+// `#[derive(new)]` expands to `field: field` initializers, which trips
+// clippy::redundant_field_names on newer toolchains even though the code is macro generated.
+#![allow(clippy::redundant_field_names)]
+
 use anyhow::{Context, Result, bail};
 use derive_new::new;
 use nom::{
