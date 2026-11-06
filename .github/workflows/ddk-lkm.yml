@@ -40,7 +40,13 @@ jobs:
         EXPECTED_SIZE2: ${{ inputs.expected_size2 }}
         EXPECTED_HASH2: ${{ inputs.expected_hash2 }}
       run: |
-        git config --global --add safe.directory /__w/KernelSU/KernelSU
+        # Upstream hardcodes /__w/KernelSU/KernelSU here. With a renamed repository the workspace
+        # becomes /__w/<repo>/<repo>, git then refuses to read it ("dubious ownership") and
+        # KSU_GIT_VERSION silently falls back to KSU_VERSION=16. Mark the real workspace as safe.
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        git config --global --add safe.directory '*'
+        echo "--- KSU_GIT_VERSION source check (this count + 30000 should show up as 'KernelSU version:' below) ---"
+        git -C "$GITHUB_WORKSPACE" rev-list --count HEAD || echo "WARN: git rev-list failed, KSU_VERSION will fall back to 16"
 
         cd kernel
 
